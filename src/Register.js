@@ -1,16 +1,63 @@
 import { Link } from "react-router-dom";
 import logo from "./img/Group 8.png";
 import styled from "styled-components";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
+  const postUrl =
+    "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up";
+
+  function postRegister(event) {
+    event.preventDefault();
+    const promisse = axios.post(postUrl, {
+      email: email,
+      name: name,
+      image: image,
+      password: password,
+    });
+    promisse.then((res) => {
+      console.log("teste envio", res.data);
+      navigate(`/`);
+    });
+    promisse.catch((erro) => {
+      console.log("teste envio erro", erro.response.data);
+    });
+  }
+
   return (
     <Container>
       <img src={logo} />
-      <input placeholder="email" />
-      <input placeholder="senha" />
-      <input placeholder="nome" />
-      <input placeholder="foto" />
-      <ButtonLogin>Cadastrar</ButtonLogin>
+      <form onSubmit={postRegister}>
+        <input
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          placeholder="email"
+        />
+        <input
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          placeholder="senha"
+        />
+        <input
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+          placeholder="nome"
+        />
+        <input
+          onChange={(e) => setImage(e.target.value)}
+          value={image}
+          placeholder="foto"
+        />
+        <ButtonLogin type="submit">Cadastrar</ButtonLogin>
+      </form>
       <Link to={"/"}>
         <h1>Já tem uma conta? Faça login!</h1>
       </Link>
@@ -23,6 +70,14 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  form{
+    display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  }
 
   img {
     margin-top: 68px;

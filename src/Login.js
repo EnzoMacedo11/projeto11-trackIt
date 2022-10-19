@@ -1,17 +1,49 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import logo from "./img/Group 8.png";
+import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const postUrl =
+    "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login";
+
+  function postLogin(event) {
+    event.preventDefault();
+    const promisse = axios.post(postUrl, {
+      email: email,
+      password: password,
+    });
+    promisse.then((res) => {
+      console.log("teste envio", res.data);
+      navigate(`/home`);
+    });
+    promisse.catch((erro) => {
+      console.log("teste envio erro", erro.response.data);
+    });
+  }
+
   return (
     <Container>
       <img src={logo} />
-      <input placeholder="email" />
-      <input placeholder="senha" />
-      <Link to={"/home"}>
-        <ButtonLogin>Entrar</ButtonLogin>
-      </Link>
-
+      <form onSubmit={postLogin}>
+        <input
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          placeholder="email"
+        />
+        <input
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          placeholder="senha"
+        />
+        <ButtonLogin type="submit">Entrar</ButtonLogin>
+      </form>
       <Link to={"/register"}>
         <h1>Não tem uma conta? Cadastre-se!</h1>
       </Link>
@@ -24,6 +56,13 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
   img {
     margin-top: 68px;
