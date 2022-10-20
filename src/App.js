@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./Home.js";
+import Habit from "./Habit.js";
+import Historic from "./Historic.js";
 import Login from "./Login";
 import Register from "./Register";
+import Today from "./Today.js";
 
 
 export default function App() {
@@ -10,7 +12,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Login/>}/>
       <Route path="/register" element={<Register/>}/>
-      <Route path="/home" element={<Home/>}/>
+      <Route path="/habitos" element={<Habit/>}/>
+      <Route path="/hoje" element={<Today/>}/>
+      <Route path="/historico" element={<Historic/>}/>
     </Routes>
   </BrowserRouter>
 );

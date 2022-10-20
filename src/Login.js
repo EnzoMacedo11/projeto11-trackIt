@@ -4,8 +4,10 @@ import logo from "./img/Group 8.png";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function Login() {
+  let [buttonD, setButtonD] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -20,29 +22,46 @@ export default function Login() {
       password: password,
     });
     promisse.then((res) => {
+      disableButton()
       console.log("teste envio", res.data);
-      navigate(`/home`);
+      navigate(`/habitos`);
     });
     promisse.catch((erro) => {
       console.log("teste envio erro", erro.response.data);
+      alert(erro.response.data.message)
     });
+  }
+
+  function disableButton() {
+    setButtonD(true);
+    console.log(buttonD);
   }
 
   return (
     <Container>
       <img src={logo} />
       <form onSubmit={postLogin}>
-        <input
+        <input type ="email"
           onChange={(e) => setEmail(e.target.value)}
           value={email}
           placeholder="email"
         />
-        <input
+        <input type="password"
           onChange={(e) => setPassword(e.target.value)}
           value={password}
           placeholder="senha"
         />
-        <ButtonLogin type="submit">Entrar</ButtonLogin>
+        <ButtonLogin disabled={buttonD} type="submit">  {buttonD === true ? (
+            <RotatingLines
+              strokeColor="white"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="30"
+              visible={true}
+            />
+          ) : (
+            <p>Entrar</p>
+          )}</ButtonLogin>
       </form>
       <Link to={"/register"}>
         <h1>Não tem uma conta? Cadastre-se!</h1>

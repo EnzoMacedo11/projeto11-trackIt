@@ -4,9 +4,11 @@ import styled from "styled-components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function Register() {
   const navigate = useNavigate();
+  let [buttonD, setButtonD] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -24,12 +26,19 @@ export default function Register() {
       password: password,
     });
     promisse.then((res) => {
+      disableButton()
       console.log("teste envio", res.data);
       navigate(`/`);
     });
     promisse.catch((erro) => {
       console.log("teste envio erro", erro.response.data);
+      alert(erro.response.data.message)
     });
+  }
+
+  function disableButton() {
+    setButtonD(true);
+    console.log(buttonD);
   }
 
   return (
@@ -37,26 +46,47 @@ export default function Register() {
       <img src={logo} />
       <form onSubmit={postRegister}>
         <input
+          disabled={buttonD}
+          type="email"
           onChange={(e) => setEmail(e.target.value)}
           value={email}
           placeholder="email"
         />
         <input
+          disabled={buttonD}
+          type="password"
           onChange={(e) => setPassword(e.target.value)}
           value={password}
           placeholder="senha"
         />
         <input
+          disabled={buttonD}
+          
           onChange={(e) => setName(e.target.value)}
           value={name}
           placeholder="nome"
         />
         <input
+          disabled={buttonD}
+          type="url"
           onChange={(e) => setImage(e.target.value)}
           value={image}
           placeholder="foto"
         />
-        <ButtonLogin type="submit">Cadastrar</ButtonLogin>
+        <ButtonLogin disabled={buttonD} type="submit">
+         
+          {buttonD === true ? (
+            <RotatingLines
+              strokeColor="white"
+              strokeWidth="5"
+              animationDuration="0.75"
+              width="30"
+              visible={true}
+            />
+          ) : (
+            <p>Cadastrar</p>
+          )}
+        </ButtonLogin>
       </form>
       <Link to={"/"}>
         <h1>Já tem uma conta? Faça login!</h1>
@@ -71,12 +101,11 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
 
-  form{
+  form {
     display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   img {
