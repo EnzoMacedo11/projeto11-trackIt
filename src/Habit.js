@@ -2,61 +2,130 @@ import Navbar from "./NavBar";
 import styled from "styled-components";
 import Footer from "./Footer";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Habit() {
+  const [name, setName] = useState("agua");
+  const [days, setDays] = useState([]);
   const [visible, setvisible] = useState(false);
-  let [nHabit, setNHabit] = useState(true);
-  const days = ["D","S","T","Q","Q","S","S"]
-  let [buttonC,setButtonC]=useState(false);
+  let [nHabit, setNHabit] = useState(0);
+  const week = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+  let [buttonsC, setButtonsC] = useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
-  function Hide (){
-  if(visible == true){
-    setvisible(false)
-  }
-  if(visible == false){
-    setvisible(true)
+  const postUrl =
+    "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
+
+  function postHabit(event) {
+    event.preventDefault();
+    const promisse = axios.post(postUrl, {
+      name: name,
+      days: returnDays[buttonsC],
+    });
+    promisse.then((res) => {
+      console.log("teste envio", res.data);
+    });
+    promisse.catch((erro) => {
+      console.log("teste envio erro", erro.response.data);
+      alert(erro.response.data.message);
+    });
   }
 
-   } 
-  
+  function hide() {
+    if (visible == true) {
+      setvisible(false);
+    }
+    if (visible == false) {
+      setvisible(true);
+    }
+  }
+
+  function colorChanger(index) {
+    console.log("teste",buttonsC)
+    
+    let listabotão = [...buttonsC];
+    
+    console.log("index", index);
+
+    if (listabotão[index] == true) {
+      listabotão[index] = false;
+    } else {
+      listabotão[index] = true;
+    }
+    console.log("listab",listabotão)
+    setButtonsC([...listabotão])
+  }
+
+  function returnDays(array){
+    let trueDays = [].filter
+
+  }
+
   return (
     <Container>
       <Navbar />
       <MHabit>
         <h1>Meus hábitos</h1>
-        <button onClick={Hide}>+</button>
+        <button onClick={hide}>+</button>
       </MHabit>
       <AlignHabit>
         <FHabit visible={visible}>
-          <form>
-            <input></input>
+          <form onSubmit={postHabit}>
+            <input
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+            ></input>
             <Days>
-            {days.map((d) => {
-              return(
-                <DayButton buttonC={buttonC}
-                  onClick={e => 
-                  setButtonC(state => !state)
-                    }
-                >{d}</DayButton>
-              )
-            })}
+              {week.map((d) => {
+                return (
+                  <DayButton type="button"
+                    buttonC={buttonsC[week.indexOf(d)]}
+                    onClick={() => colorChanger(week.indexOf(d))}
+                  >
+                    {d[0]}
+                  </DayButton>
+                );
+              })}
             </Days>
 
-            <Save><h1>Cancelar</h1>
-            <button>Salvar</button></Save>
-            
+            <Save>
+              <h1 onClick={hide} >Cancelar</h1>
+              <button type="submit">Salvar</button>
+            </Save>
           </form>
-          </FHabit>
+        </FHabit>
       </AlignHabit>
 
       <Habits>
-        {nHabit === true ? (
+        {nHabit === 0 ? (
           <h1>
             Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para
             começar a trackear!
           </h1>
         ) : (
-          <h1>agua</h1>
+          <Card>
+            <h1>{name}</h1>
+            <CardAlign>
+              {" "}
+              {week.map((d) => {
+                return (
+                  <DayButton
+                    buttonC={[week.indexOf(d)]}
+                   
+                  >
+                    {d}
+                  </DayButton>
+                );
+              })}
+            </CardAlign>
+          </Card>
         )}
       </Habits>
       <Footer />
@@ -126,30 +195,27 @@ const Habits = styled.div`
 `;
 const FHabit = styled.div`
   margin-top: 30px;
-  display: ${({visible}) => visible ? 'flex': 'none'};
+  display: ${({ visible }) => (visible ? "flex" : "none")};
   justify-content: center;
-  
+
   width: 340px;
   height: 180px;
   left: 17px;
   top: 147px;
 
-  background: #E5E5E5;
+  background: #e5e5e5;
   border-radius: 5px;
-  form{
-    margin-top:18px;
-    input{
-  box-sizing: border-box;
-width: 303px;
-height: 45px;
+  form {
+    margin-top: 18px;
+    input {
+      box-sizing: border-box;
+      width: 303px;
+      height: 45px;
 
-
-background: #FFFFFF;
-border: 1px solid #D5D5D5;
-border-radius: 5px;
+      background: #ffffff;
+      border: 1px solid #d5d5d5;
+      border-radius: 5px;
     }
-
-
   }
 `;
 
@@ -159,57 +225,77 @@ const AlignHabit = styled.div`
   align-items: center;
 `;
 const Days = styled.div`
-margin-top: 5px;
-display:flex;
-
-`
+  margin-top: 5px;
+  display: flex;
+`;
 const DayButton = styled.button`
-margin-right:5px;
-display:flex;
-justify-content:center;
-align-items:center;
-box-sizing: border-box;
-width: 30px;
-height: 30px;
-background: ${({buttonC}) => buttonC ? '#DBDBDB': '#FFFFF'};
-border: 1px solid #D5D5D5;
-border-radius: 5px;
+  margin-right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  background: ${({ buttonC }) => (buttonC ? "#DBDBDB" : "#FFFFF")};
+  border: 1px solid #d5d5d5;
+  border-radius: 5px;
 
-font-family: 'Lexend Deca';
-font-style: normal;
-font-weight: 400;
-font-size: 19.976px;
-line-height: 25px;
+  font-family: "Lexend Deca";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 19.976px;
+  line-height: 25px;
 
-color: ${({buttonC}) => buttonC ? '#FFFFFF': '#DBDBDB'};`
+  color: ${({ buttonC }) => (buttonC ? "#FFFFFF" : "#DBDBDB")};
+`;
 
 const Save = styled.div`
-display:flex;
-align-items:center;
-margin-top:40px;
-margin-left:140px;
+  display: flex;
+  align-items: center;
+  margin-top: 40px;
+  margin-left: 140px;
 
-h1{
-  font-family: 'Lexend Deca';
-font-style: normal;
-font-weight: 400;
-font-size: 16px;
-line-height: 20px;
-text-align: center;
-color: #52B6FF;
-}
-button{
-margin-left:23px;
-width: 84px;
-height: 35px;
-background: #52B6FF;
-border-radius: 5px;
-font-family: 'Lexend Deca';
-font-style: normal;
-font-weight: 400;
-font-size: 16px;
-line-height: 20px;
-text-align: center;
-color: #FFFFFF;
-}
-`
+  h1 {
+    font-family: "Lexend Deca";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
+    color: #52b6ff;
+  }
+  button {
+    margin-left: 23px;
+    width: 84px;
+    height: 35px;
+    background: #52b6ff;
+    border-radius: 5px;
+    font-family: "Lexend Deca";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
+    color: #ffffff;
+  }
+`;
+
+const Card = styled.div`
+  width: 340px;
+  height: 91px;
+  background: #e5e5e5;
+  border-radius: 5px;
+
+  h1 {
+    font-family: "Lexend Deca";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 19.976px;
+    line-height: 25px;
+    color: #666666;
+  }
+`;
+
+const CardAlign = styled.div`
+  display: flex;
+`;
